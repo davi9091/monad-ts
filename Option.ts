@@ -1,12 +1,12 @@
-type None = { _tag: 'none' }
-type Some<T> = { _tag: 'some', value: T }
-type Option<T> = Some<T> | None
+type None = { _option: 'none' }
+type Some<A> = { _option: 'some', value: A }
+type Option<A> = Some<A> | None
 
-export const none: () => None = () => ({ _tag: 'none' })
-export const pure: <T>(v: T) => Option<T> = (v) => ({ _tag: 'some', value: v })
+export const none: () => None = () => ({ _option: 'none' })
+export const pure: <A>(v: A) => Option<A> = (v) => ({ _option: 'some', value: v })
 
-function hasValue<T>(value: Option<T>): value is Some<T> {
-  return value._tag === 'some'
+function hasValue<A>(value: Option<A>): value is Some<A> {
+  return value._option === 'some'
 }
 
 export const map: <A, B>(mapOver: Option<A>, fn: (v: A) => B) => Option<B> = (mapOver, fn) => 
