@@ -1,0 +1,12 @@
+{
+  "name": "monad-ts",
+  "version": "0.0.1",
+  "description": "Monad demo for TS",
+  "main": "index.ts",
+  "repository": "git@github.com:davi9091/monad-ts.git",
+  "author": "Arkadiy Rubtsov <arkadyrubtsov@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^4.9.4"
+  }
+}
