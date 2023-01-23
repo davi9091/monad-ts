@@ -3,33 +3,33 @@ type Some<A> = { _option: 'some', value: A }
 type Option<A> = Some<A> | None
 
 export const none: () => None = () => ({ _option: 'none' })
-export const pure: <A>(v: A) => Option<A> = (v) => ({ _option: 'some', value: v })
+export const pure: <A>(x: A) => Option<A> = (x) => ({ _option: 'some', value: x })
 
-function hasValue<A>(value: Option<A>): value is Some<A> {
-  return value._option === 'some'
+function hasValue<A>(mx: Option<A>): mx is Some<A> {
+  return mx._option === 'some'
 }
 
-export const map: <A, B>(mapOver: Option<A>, fn: (v: A) => B) => Option<B> = (mapOver, fn) => 
-  hasValue(mapOver) ? pure(fn(mapOver.value)) : none()
+export const map: <A, B>(mx: Option<A>, f: (x: A) => B) => Option<B> = (mx, f) => 
+  hasValue(mx) ? pure(f(mx.value)) : none()
 
-export const chain: <A, B>(chainOver: Option<A>, fn: (v: A) => Option<B>) => Option<B> = (chainOver, fn) => 
-  hasValue(chainOver) ? fn(chainOver.value) : none()
+export const chain: <A, B>(mx: Option<A>, f: (x: A) => Option<B>) => Option<B> = (mx, f) => 
+  hasValue(mx) ? f(mx.value) : none()
 
-export const unwrapOrElse: <A>(wrapped: Option<A>, fn: () => A) => A  = (wrapped, fn) =>
-  hasValue(wrapped) ? wrapped.value : fn()
+export const unwrapOrElse: <A>(mx: Option<A>, f: () => A) => A  = (mx, f) =>
+  hasValue(mx) ? mx.value : f()
 
-export const compose: <A, B, C>(f: (fx: A) => Option<B>, g: (gx: B) => Option<C>) => (x: A) => Option<C> = (f, g) =>
+export const compose: <A, B, C>(f: (x: A) => Option<B>, g: (y: B) => Option<C>) => (x: A) => Option<C> = (f, g) =>
   x => chain(f(x), g)
 
-export const join: <A>(v: Option<Option<A>>) => Option<A> = (wrapped) => hasValue(wrapped) ? wrapped.value : none()
+export const join: <A>(mmx: Option<Option<A>>) => Option<A> = (mmx) => hasValue(mmx) ? mmx.value : none()
 
-export const joinWithChain: <A>(v: Option<Option<A>>) => Option<A> = (wrapped) => chain(wrapped, (v) => v)
+export const joinWithChain: <A>(mmx: Option<Option<A>>) => Option<A> = (mmx) => chain(mmx, (mx) => mx)
 
-export const chainWithJoin: <A, B>(chainOver: Option<A>, fn: (v: A) => Option<B>) => Option<B> = (chainOver, fn) => 
-  join(map(chainOver, fn))
+export const chainWithJoin: <A, B>(mx: Option<A>, f: (x: A) => Option<B>) => Option<B> = (mx, f) => 
+  join(map(mx, f))
   
-export const liftA2: <A, B, C>(fn: (fa: A, fb: B) => C) => (ga: Option<A>, gb: Option<B>) => Option<C> = (fn) => (ga, gb) =>
-  chain(ga, (fa => chain(gb, (fb) => pure(fn(fa, fb)))))
+export const liftA2: <A, B, C>(f: (a: A, b: B) => C) => (ma: Option<A>, mb: Option<B>) => Option<C> = (f) => (ma, mb) =>
+  chain(ma, (a => chain(mb, (b) => pure(f(a, b)))))
 
 export const apply: <A, B>(mf: Option<(x: A) => B>, mx: Option<A>) => Option<B> = (mf, mx) =>
   chain(mf, (f => chain(mx, (x) => pure(f(x)))))
